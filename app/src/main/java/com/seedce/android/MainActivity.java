@@ -32,6 +32,15 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (!isCallerTrusted()) {
+            finish();
+            return;
+        }
+        if (isDebuggerConnected()) {
+            finish();
+            return;
+        }
+
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE);
@@ -49,13 +58,17 @@ public class MainActivity extends Activity {
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(false);
         settings.setAllowFileAccess(true);
+        settings.setAllowContentAccess(false);
         settings.setAllowFileAccessFromFileURLs(false);
         settings.setAllowUniversalAccessFromFileURLs(false);
         settings.setSupportZoom(false);
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
         settings.setMediaPlaybackRequiresUserGesture(true);
+        settings.setSavePassword(false);
+        settings.setSaveFormData(false);
 
         try {
             if (android.os.Build.VERSION.SDK_INT >= 33) {
@@ -144,6 +157,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        clearClipboard();
         if (webView != null) {
             webView.evaluateJavascript(
                 "(function(){" +
@@ -205,6 +219,37 @@ public class MainActivity extends Activity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    private boolean isCallerTrusted() {
+        try {
+            String callerPkg = getCallingPackage();
+            if (callerPkg == null) {
+                return true;
+            }
+            return getPackageName().equals(callerPkg);
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    private boolean isDebuggerConnected() {
+        try {
+            return android.os.Debug.isDebuggerConnected();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void clearClipboard() {
+        try {
+            android.content.ClipboardManager cm = (android.content.ClipboardManager)
+                    getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+            if (cm != null) {
+                cm.setPrimaryClip(android.content.ClipData.newPlainText("", ""));
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     @Override
