@@ -39,10 +39,11 @@ jobs:
 
       - name: Sign APK with Cosign (keyless)
         run: |
-          cosign sign-blob --yes "seedCE-${{ github.ref_name }}.apk" \
-            > "seedCE-${{ github.ref_name }}.apk.sig" 2>&1
-          cat "seedCE-${{ github.ref_name }}.apk.sig"
-          ls -la *.sig
+          cosign sign-blob --yes \
+            --output-signature "seedCE-${{ github.ref_name }}.apk.sig" \
+            --output-certificate "seedCE-${{ github.ref_name }}.apk.crt" \
+            "seedCE-${{ github.ref_name }}.apk"
+          ls -la *.sig *.crt
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -51,4 +52,5 @@ jobs:
           files: |
             seedCE-${{ github.ref_name }}.apk
             seedCE-${{ github.ref_name }}.apk.sig
+            seedCE-${{ github.ref_name }}.apk.crt
           generate_release_notes: true
