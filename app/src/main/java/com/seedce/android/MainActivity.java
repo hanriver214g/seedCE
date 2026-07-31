@@ -58,10 +58,14 @@ public class MainActivity extends Activity {
         settings.setMediaPlaybackRequiresUserGesture(true);
 
         try {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                androidx.webkit.WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, true);
-            } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                androidx.webkit.WebSettingsCompat.setForceDark(settings, androidx.webkit.WebSettingsCompat.FORCE_DARK_AUTO);
+            if (android.os.Build.VERSION.SDK_INT >= 33) {
+                androidx.webkit.WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, false);
+            }
+            if (androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.FORCE_DARK)) {
+                androidx.webkit.WebSettingsCompat.setForceDark(settings, androidx.webkit.WebSettingsCompat.FORCE_DARK_OFF);
+            }
+            if (androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.FORCE_DARK_STRATEGY)) {
+                androidx.webkit.WebSettingsCompat.setForceDarkStrategy(settings, androidx.webkit.WebSettingsCompat.DARK_STRATEGY_WEB_THEME_DARKENING_ONLY);
             }
         } catch (Exception ignored) {
         }
