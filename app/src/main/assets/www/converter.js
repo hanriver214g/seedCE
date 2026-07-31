@@ -53,16 +53,16 @@ var BIP39Converter = (function () {
     return tokens.filter(function (t) { return t.length > 0; });
   }
 
-  function convertToChinese(englishWords) {
+  function convertToChinese(inputWords) {
     var result = [];
     var errors = [];
-    for (var i = 0; i < englishWords.length; i++) {
-      var word = englishWords[i].toLowerCase();
+    for (var i = 0; i < inputWords.length; i++) {
+      var word = inputWords[i].toLowerCase();
       var idx = englishWords.indexOf(word);
       if (idx >= 0 && idx < chineseWords.length) {
         result.push(chineseWords[idx]);
       } else {
-        errors.push({ position: i + 1, word: englishWords[i] });
+        errors.push({ position: i + 1, word: inputWords[i] });
         result.push("[?]");
       }
     }
