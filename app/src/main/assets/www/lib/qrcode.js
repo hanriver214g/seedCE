@@ -377,43 +377,33 @@ var QRCode;
             var _elImage = this._elImage;
             var _oContext = this._oContext;
             var _htOption = this._htOption;
-            
+
 			var nCount = oQRCode.getModuleCount();
-			var nWidth = _htOption.width / nCount;
-			var nHeight = _htOption.height / nCount;
-			var nRoundedWidth = Math.round(nWidth);
-			var nRoundedHeight = Math.round(nHeight);
+			var nQuietZone = 4;
+			var nTotalCount = nCount + nQuietZone * 2;
+			var nModuleSize = Math.max(1, Math.floor(Math.min(_htOption.width, _htOption.height) / nTotalCount));
+			var nTotalSize = nModuleSize * nTotalCount;
+			var nOffsetX = Math.floor((_htOption.width - nTotalSize) / 2);
+			var nOffsetY = Math.floor((_htOption.height - nTotalSize) / 2);
 
 			_elImage.style.display = "none";
 			this.clear();
-			
+
+			_oContext.fillStyle = _htOption.colorLight;
+			_oContext.fillRect(0, 0, _htOption.width, _htOption.height);
+
 			for (var row = 0; row < nCount; row++) {
 				for (var col = 0; col < nCount; col++) {
 					var bIsDark = oQRCode.isDark(row, col);
-					var nLeft = col * nWidth;
-					var nTop = row * nHeight;
-					_oContext.strokeStyle = bIsDark ? _htOption.colorDark : _htOption.colorLight;
-					_oContext.lineWidth = 1;
-					_oContext.fillStyle = bIsDark ? _htOption.colorDark : _htOption.colorLight;					
-					_oContext.fillRect(nLeft, nTop, nWidth, nHeight);
-					
-					// 안티 앨리어싱 방지 처리
-					_oContext.strokeRect(
-						Math.floor(nLeft) + 0.5,
-						Math.floor(nTop) + 0.5,
-						nRoundedWidth,
-						nRoundedHeight
-					);
-					
-					_oContext.strokeRect(
-						Math.ceil(nLeft) - 0.5,
-						Math.ceil(nTop) - 0.5,
-						nRoundedWidth,
-						nRoundedHeight
-					);
+					var nLeft = nOffsetX + (col + nQuietZone) * nModuleSize;
+					var nTop = nOffsetY + (row + nQuietZone) * nModuleSize;
+					if (bIsDark) {
+						_oContext.fillStyle = _htOption.colorDark;
+						_oContext.fillRect(nLeft, nTop, nModuleSize, nModuleSize);
+					}
 				}
 			}
-			
+
 			this._bIsPainted = true;
 		};
 			

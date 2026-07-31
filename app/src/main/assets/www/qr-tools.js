@@ -211,10 +211,22 @@ var QRTools = (function () {
         ctx.drawImage(scanVideo, 0, 0, w, h);
         try {
           var imageData = ctx.getImageData(0, 0, w, h);
-          var code = jsQR(imageData.data, w, h);
+          var code = jsQR(imageData.data, w, h, { inversionAttempts: "attemptBoth" });
           if (code && code.data) {
             onScanSuccess(code.data);
             return;
+          }
+          var minSide = Math.min(w, h);
+          var cropSize = Math.floor(minSide * 0.6);
+          if (cropSize > 200) {
+            var cx = Math.floor((w - cropSize) / 2);
+            var cy = Math.floor((h - cropSize) / 2);
+            var cropData = ctx.getImageData(cx, cy, cropSize, cropSize);
+            var code2 = jsQR(cropData.data, cropSize, cropSize, { inversionAttempts: "attemptBoth" });
+            if (code2 && code2.data) {
+              onScanSuccess(code2.data);
+              return;
+            }
           }
         } catch (e) {}
       }
@@ -238,7 +250,7 @@ var QRTools = (function () {
         ctx.drawImage(img, 0, 0, dw, dh);
         try {
           var imageData = ctx.getImageData(0, 0, dw, dh);
-          var code = jsQR(imageData.data, dw, dh);
+          var code = jsQR(imageData.data, dw, dh, { inversionAttempts: "attemptBoth" });
           if (code && code.data) {
             onScanSuccess(code.data);
           } else {
@@ -323,11 +335,11 @@ var QRTools = (function () {
       try {
         genQrInstance = new QRCode(genTarget, {
           text: text,
-          width: 256,
-          height: 256,
+          width: 360,
+          height: 360,
           colorDark: "#000000",
           colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.M
+          correctLevel: QRCode.CorrectLevel.H
         });
       } catch (e) {
         genTarget.innerHTML = '<p class="alert-danger">生成二维码失败：' + e.message + "</p>";
