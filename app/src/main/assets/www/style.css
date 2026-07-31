@@ -1,0 +1,317 @@
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --link-color: #1f6feb;
+  --textarea-bg: #ffffff;
+  --textarea-text: #000000;
+  --output-bg: #f0f0f0;
+  --output-text: #000000;
+  --alert-info-color: #666666;
+  --alert-info-bg: #eeeeee;
+  --alert-blue-color: #1f6feb;
+  --alert-blue-bg: #eeeeee;
+  --alert-danger-color: #d32f2f;
+  --alert-danger-bg: #eeeeee;
+  --caution-grey-color: #333333;
+  --caution-grey-bg: #cccccc;
+  --footer-color: #888888;
+  --border-color: #cccccc;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --link-color: #8ab4f8;
+    --textarea-bg: #1e1e1e;
+    --textarea-text: #e0e0e0;
+    --output-bg: #2a2a2a;
+    --output-text: #e0e0e0;
+    --alert-info-color: #aaaaaa;
+    --alert-info-bg: #2a2a2a;
+    --alert-blue-color: #8ab4f8;
+    --alert-blue-bg: #2a2a2a;
+    --alert-danger-color: #ef5350;
+    --alert-danger-bg: #2a2a2a;
+    --caution-grey-color: #e0e0e0;
+    --caution-grey-bg: #3a3a3a;
+    --footer-color: #888888;
+    --border-color: #444444;
+  }
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 12px;
+  box-sizing: border-box;
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+textarea {
+  font-size: 130%;
+  font-family: 'Courier New', monospace;
+  background-color: var(--textarea-bg);
+  color: var(--textarea-text);
+  border: 1px solid var(--border-color);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-width: 0;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+a {
+  color: var(--link-color);
+}
+
+p {
+  line-height: 1.6;
+}
+
+.caution-grey {
+  color: var(--caution-grey-color);
+  background-color: var(--caution-grey-bg);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.alert-info {
+  color: var(--alert-info-color);
+  background-color: var(--alert-info-bg);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.alert-blue {
+  color: var(--alert-blue-color);
+  background-color: var(--alert-blue-bg);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.alert-danger {
+  color: var(--alert-danger-color);
+  background-color: var(--alert-danger-bg);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+footer {
+  color: var(--footer-color);
+  text-align: center;
+  font-size: smaller;
+  margin-top: 150px;
+  margin-bottom: 20px;
+}
+
+button {
+  background-color: var(--link-color);
+  color: #ffffff;
+  border: none;
+  padding: 8px 18px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+
+button.secondary {
+  background-color: var(--alert-info-color);
+}
+
+button.danger {
+  background-color: var(--alert-danger-color);
+}
+
+input[type="file"] {
+  color: var(--text-color);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.autocomplete-box {
+  display: none;
+  border: 1px solid var(--border-color);
+  border-top: none;
+  background-color: var(--textarea-bg);
+  max-height: 220px;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  z-index: 100;
+  border-radius: 0 0 4px 4px;
+}
+
+.autocomplete-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.autocomplete-item {
+  padding: 6px 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 120%;
+  cursor: pointer;
+  color: var(--textarea-text);
+}
+
+.autocomplete-item:hover {
+  background-color: var(--alert-info-bg);
+}
+
+.autocomplete-item.active {
+  background-color: var(--link-color);
+  color: #ffffff;
+}
+
+.qr-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  padding: 12px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-modal-content {
+  box-sizing: border-box;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border-radius: 8px;
+  padding: 16px;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.qr-modal-content h3 {
+  margin: 0 0 12px 0;
+}
+
+.qr-video-wrap {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 auto 12px;
+  background-color: #000;
+  border-radius: 4px;
+  overflow: hidden;
+  max-height: 50vh;
+}
+
+.qr-video-wrap video {
+  width: 100%;
+  height: auto;
+  max-height: 50vh;
+  display: block;
+  object-fit: contain;
+  background-color: #000;
+}
+
+.qr-gen-area {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 160px;
+  max-height: 60vh;
+  margin: 0 auto 12px;
+  overflow: hidden;
+}
+
+.qr-gen-area img,
+.qr-gen-area canvas,
+.qr-gen-area svg {
+  display: block;
+  height: auto;
+  max-width: min(256px, 80vw);
+  max-height: min(256px, 80vh);
+  width: min(256px, 80vw);
+}
+
+.qr-modal-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.qr-modal-buttons button {
+  margin: 0;
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+.qr-btn-danger {
+  background-color: var(--alert-danger-color);
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.output-area {
+  background-color: var(--output-bg);
+  color: var(--output-text);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 12px;
+  min-height: 80px;
+  font-family: 'Courier New', monospace;
+  font-size: 130%;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.lang-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 80%;
+  background-color: var(--link-color);
+  color: #fff;
+}
+
+.error-list {
+  color: var(--alert-danger-color);
+  font-size: 90%;
+}

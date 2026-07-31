@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>seedCE - BIP-39 中英助记词转换器</title>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="english-words.js"></script>
+  <script src="chinese-words.js"></script>
+  <script src="util.js"></script>
+  <script src="converter.js"></script>
+  <script src="lib/jsQR.js"></script>
+  <script src="lib/qrcode.js"></script>
+  <script src="qr-tools.js"></script>
+</head>
+<body>
+  <h1>seedCE</h1>
+  <p style="text-align:center;">BIP-39 中英文助记词转换器</p>
+
+  <p class="caution-grey">【安全提示】请在离线环境或禁用插件的隐身窗口中使用。应用完全离线运行，所有数据仅在本地处理。</p>
+
+  <h2>输入助记词</h2>
+  <p style="font-size:90%;color:var(--footer-color);">
+    支持中文或英文 BIP-39 助记词，用空格、逗号或换行分隔。自动识别语言并转换为另一种语言。
+  </p>
+  <textarea id="input-words" rows="6" placeholder="例如：abandon ability able about ... 或：的 一 是 在 ..."></textarea>
+
+  <div class="button-row">
+    <button id="btn-convert" type="button">转换</button>
+    <button id="btn-scan" type="button" class="secondary">扫码输入</button>
+    <button id="btn-clear" type="button" class="danger">清空</button>
+  </div>
+
+  <h2>转换结果</h2>
+  <div>
+    <span id="lang-info" style="display:none;">
+      检测到语言：<span class="lang-badge" id="detected-lang"></span>
+      &nbsp;|&nbsp; 词数：<span id="word-count"></span>
+    </span>
+  </div>
+  <div id="output-area" class="output-area" data-clear-on-pause></div>
+  <div id="error-area" class="error-list"></div>
+
+  <div class="button-row">
+    <button id="btn-copy" type="button">复制结果</button>
+    <button id="btn-qr" type="button" class="secondary">生成二维码</button>
+    <button id="btn-swap" type="button">↔ 结果作为新输入</button>
+  </div>
+
+  <footer>
+    <p>seedCE · 基于 BIP-39 标准 · 完全离线运行</p>
+    <p style="font-size:80%;">词表来源：github.com/bitcoin/bips/blob/master/bip-0039</p>
+  </footer>
+
+  <script>
+  (function () {
+    var inputEl = $query("#input-words");
+    var outputEl = $query("#output-area");
+    var errorEl = $query("#error-area");
+    var langInfoEl = $query("#lang-info");
+    var detectedLangEl = $query("#detected-lang");
+    var wordCountEl = $query("#word-count");
+
+    QRTools.attachAutocomplete(inputEl, englishWords);
+
+    function doConvert() {
+      var text = inputEl.value;
+      var result = BIP39Converter.convert(text);
+
+      errorEl.innerHTML = "";
+      outputEl.textContent = result.output;
+
+      if (result.lang !== "unknown") {
+        langInfoEl.style.display = "inline";
+        detectedLangEl.textContent = result.lang === "english" ? "English" : "中文";
+        wordCountEl.textContent = result.wordCount;
+      } else {
+        langInfoEl.style.display = "none";
+      }
+
+      if (result.errors && result.errors.length > 0) {
+        var msgs = result.errors.map(function (e) {
+          return "第 " + e.position + " 个词无效：「" + e.word + "」";
+        });
+        errorEl.innerHTML = msgs.join("<br>");
+      }
+    }
+
+    $query("#btn-convert").addEventListener("click", doConvert);
+
+    $query("#btn-clear").addEventListener("click", function () {
+      inputEl.value = "";
+      outputEl.textContent = "";
+      errorEl.innerHTML = "";
+      langInfoEl.style.display = "none";
+    });
+
+    $query("#btn-scan").addEventListener("click", function () {
+      QRTools.openScanner(function (text) {
+        inputEl.value = text;
+        doConvert();
+      });
+    });
+
+    $query("#btn-copy").addEventListener("click", function () {
+      var text = outputEl.textContent;
+      if (!text) return;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () {
+          alert("已复制到剪贴板");
+        }, function () {
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    });
+
+    function fallbackCopy(text) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+        alert("已复制到剪贴板");
+      } catch (e) {
+        alert("复制失败：" + e.message);
+      }
+      document.body.removeChild(ta);
+    }
+
+    $query("#btn-qr").addEventListener("click", function () {
+      var text = outputEl.textContent;
+      QRTools.openGenerator(text);
+    });
+
+    $query("#btn-swap").addEventListener("click", function () {
+      var text = outputEl.textContent;
+      if (!text) return;
+      inputEl.value = text;
+      outputEl.textContent = "";
+      errorEl.innerHTML = "";
+      langInfoEl.style.display = "none";
+      doConvert();
+    });
+
+    inputEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        doConvert();
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
