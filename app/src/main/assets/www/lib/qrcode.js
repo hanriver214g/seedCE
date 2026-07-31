@@ -56,12 +56,6 @@ var QRCode;
 		}
 
 		this.parsedData = Array.prototype.concat.apply([], this.parsedData);
-
-		if (this.parsedData.length != this.data.length) {
-			this.parsedData.unshift(191);
-			this.parsedData.unshift(187);
-			this.parsedData.unshift(239);
-		}
 	}
 
 	QR8bitByte.prototype = {
@@ -494,7 +488,7 @@ var QRCode;
 
 	function _getUTF8Length(sText) {
 		var replacedText = encodeURI(sText).toString().replace(/\%[0-9a-fA-F]{2}/g, 'a');
-		return replacedText.length + (replacedText.length != sText ? 3 : 0);
+		return replacedText.length;
 	}
 	
 	/**

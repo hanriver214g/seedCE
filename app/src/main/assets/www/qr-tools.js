@@ -273,7 +273,8 @@ var QRTools = (function () {
     if (scanCallback) {
       var cb = scanCallback;
       scanCallback = null;
-      cb(text);
+      var cleaned = text.replace(/^\uFEFF/, "");
+      cb(cleaned);
     }
   }
 

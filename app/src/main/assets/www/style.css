@@ -258,9 +258,11 @@ input[type="file"] {
 .qr-gen-area svg {
   display: block;
   height: auto;
-  max-width: min(256px, 80vw);
-  max-height: min(256px, 80vh);
-  width: min(256px, 80vw);
+  max-width: min(360px, 90vw);
+  max-height: min(360px, 90vh);
+  width: min(360px, 90vw);
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 .qr-modal-buttons {
