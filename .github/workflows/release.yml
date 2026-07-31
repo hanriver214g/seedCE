@@ -26,17 +26,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
       - name: Rename APK files
         run: |
-          cp app/build/outputs/apk/debug/app-debug.apk seedCE-debug-${{ github.ref_name }}.apk
-          cp app/build/outputs/apk/release/app-release-unsigned.apk seedCE-release-unsigned-${{ github.ref_name }}.apk 2>/dev/null || true
-          cp app/build/outputs/apk/release/app-release.apk seedCE-release-${{ github.ref_name }}.apk 2>/dev/null || true
+          cp app/build/outputs/apk/release/app-release.apk seedCE-${{ github.ref_name }}.apk
           ls -la *.apk
 
       - name: Install Cosign
@@ -44,17 +39,14 @@ jobs:
 
       - name: Sign APK with Cosign (keyless)
         run: |
-          for apk in *.apk; do
-            echo "Signing $apk..."
-            cosign sign-blob --yes "$apk" > "${apk}.sig" 2>&1 || true
-          done
-          ls -la *.sig 2>/dev/null || echo "No signature files"
+          cosign sign-blob --yes "seedCE-${{ github.ref_name }}.apk" > "seedCE-${{ github.ref_name }}.apk.sig"
+          ls -la *.sig
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            *.apk
-            *.sig
+            seedCE-${{ github.ref_name }}.apk
+            seedCE-${{ github.ref_name }}.apk.sig
           generate_release_notes: true
