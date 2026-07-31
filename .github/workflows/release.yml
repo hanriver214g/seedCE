@@ -1,0 +1,60 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Rename APK files
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk seedCE-debug-${{ github.ref_name }}.apk
+          cp app/build/outputs/apk/release/app-release-unsigned.apk seedCE-release-unsigned-${{ github.ref_name }}.apk 2>/dev/null || true
+          cp app/build/outputs/apk/release/app-release.apk seedCE-release-${{ github.ref_name }}.apk 2>/dev/null || true
+          ls -la *.apk
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign APK with Cosign (keyless)
+        run: |
+          for apk in *.apk; do
+            echo "Signing $apk..."
+            cosign sign-blob --yes "$apk" > "${apk}.sig" 2>&1 || true
+          done
+          ls -la *.sig 2>/dev/null || echo "No signature files"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            *.apk
+            *.sig
+          generate_release_notes: true
