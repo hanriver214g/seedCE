@@ -14,9 +14,41 @@ var BIP39Converter = (function () {
     return "unknown";
   }
 
+  function segmentChinese(text) {
+    var result = [];
+    var i = 0;
+    while (i < text.length) {
+      var matched = null;
+      for (var len = 4; len >= 1; len--) {
+        if (i + len <= text.length) {
+          var candidate = text.substring(i, i + len);
+          if (chineseWords.indexOf(candidate) >= 0) {
+            matched = candidate;
+            break;
+          }
+        }
+      }
+      if (matched) {
+        result.push(matched);
+        i += matched.length;
+      } else {
+        result.push(text.charAt(i));
+        i++;
+      }
+    }
+    return result;
+  }
+
   function parseInput(text) {
     if (!text) return [];
     var cleaned = text.trim();
+    var hasChinese = /[\u4e00-\u9fa5]/.test(cleaned);
+    var hasSeparator = /[\s,，\n]/.test(cleaned);
+
+    if (hasChinese && !hasSeparator) {
+      return segmentChinese(cleaned);
+    }
+
     var tokens = cleaned.split(/[\s,，\n]+/);
     return tokens.filter(function (t) { return t.length > 0; });
   }
@@ -67,9 +99,8 @@ var BIP39Converter = (function () {
     } else {
       return { output: "", errors: [{ position: 0, word: words[0] }], lang: "unknown", wordCount: 0 };
     }
-    var separator = lang === "english" ? "" : " ";
     return {
-      output: conversion.result.join(separator),
+      output: conversion.result.join(" "),
       errors: conversion.errors,
       lang: lang,
       wordCount: words.length
