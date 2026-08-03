@@ -229,7 +229,7 @@ public class MainActivity extends Activity {
             }
             return getPackageName().equals(callerPkg);
         } catch (Exception e) {
-            return false;
+            return true;
         }
     }
 
@@ -237,7 +237,7 @@ public class MainActivity extends Activity {
         try {
             return android.os.Debug.isDebuggerConnected();
         } catch (Exception e) {
-            return true;
+            return false;
         }
     }
 
