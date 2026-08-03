@@ -328,10 +328,13 @@ var QRTools = (function () {
       try { genQrInstance.clear(); } catch (e) {}
       genQrInstance = null;
     }
-    genTarget.innerHTML = "";
+    genTarget.textContent = "";
 
     if (!text || text.trim() === "") {
-      genTarget.innerHTML = '<p class="alert-danger">没有可生成二维码的内容。</p>';
+      var p = document.createElement("p");
+      p.className = "alert-danger";
+      p.textContent = "没有可生成二维码的内容。";
+      genTarget.appendChild(p);
     } else {
       try {
         genQrInstance = new QRCode(genTarget, {
@@ -343,7 +346,10 @@ var QRTools = (function () {
           correctLevel: QRCode.CorrectLevel.H
         });
       } catch (e) {
-        genTarget.innerHTML = '<p class="alert-danger">生成二维码失败：' + e.message + "</p>";
+        var p2 = document.createElement("p");
+        p2.className = "alert-danger";
+        p2.textContent = "生成二维码失败：" + e.message;
+        genTarget.appendChild(p2);
       }
     }
     genModal.style.display = "flex";
@@ -354,7 +360,7 @@ var QRTools = (function () {
       try { genQrInstance.clear(); } catch (e) {}
       genQrInstance = null;
     }
-    if (genTarget) genTarget.innerHTML = "";
+    if (genTarget) genTarget.textContent = "";
     if (genModal) genModal.style.display = "none";
   }
 

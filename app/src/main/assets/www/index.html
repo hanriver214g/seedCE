@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';">
   <title>seedCE - BIP-39 中英助记词转换器</title>
 
   <link rel="stylesheet" href="style.css">
@@ -64,11 +65,19 @@
 
     QRTools.attachAutocomplete(inputEl, englishWords);
 
+    function showError(msgs) {
+      errorEl.textContent = "";
+      msgs.forEach(function (msg, i) {
+        if (i > 0) errorEl.appendChild(document.createElement("br"));
+        errorEl.appendChild(document.createTextNode(msg));
+      });
+    }
+
     function doConvert() {
       var text = inputEl.value;
       var result = BIP39Converter.convert(text);
 
-      errorEl.innerHTML = "";
+      errorEl.textContent = "";
       outputEl.textContent = result.output;
 
       if (result.lang !== "unknown") {
@@ -83,7 +92,7 @@
         var msgs = result.errors.map(function (e) {
           return "第 " + e.position + " 个词无效：「" + e.word + "」";
         });
-        errorEl.innerHTML = msgs.join("<br>");
+        showError(msgs);
       }
     }
 
@@ -92,7 +101,7 @@
     $query("#btn-clear").addEventListener("click", function () {
       inputEl.value = "";
       outputEl.textContent = "";
-      errorEl.innerHTML = "";
+      errorEl.textContent = "";
       langInfoEl.style.display = "none";
     });
 
@@ -143,7 +152,7 @@
       if (!text) return;
       inputEl.value = text;
       outputEl.textContent = "";
-      errorEl.innerHTML = "";
+      errorEl.textContent = "";
       langInfoEl.style.display = "none";
       doConvert();
     });

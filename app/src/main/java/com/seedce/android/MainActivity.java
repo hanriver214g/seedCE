@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(false);
-        settings.setAllowFileAccess(true);
+        settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(false);
         settings.setAllowFileAccessFromFileURLs(false);
         settings.setAllowUniversalAccessFromFileURLs(false);
@@ -229,7 +229,7 @@ public class MainActivity extends Activity {
             }
             return getPackageName().equals(callerPkg);
         } catch (Exception e) {
-            return true;
+            return false;
         }
     }
 
@@ -237,7 +237,7 @@ public class MainActivity extends Activity {
         try {
             return android.os.Debug.isDebuggerConnected();
         } catch (Exception e) {
-            return false;
+            return true;
         }
     }
 
@@ -246,7 +246,11 @@ public class MainActivity extends Activity {
             android.content.ClipboardManager cm = (android.content.ClipboardManager)
                     getSystemService(android.content.Context.CLIPBOARD_SERVICE);
             if (cm != null) {
-                cm.setPrimaryClip(android.content.ClipData.newPlainText("", ""));
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                    cm.clearPrimaryClip();
+                } else {
+                    cm.setPrimaryClip(android.content.ClipData.newPlainText("", ""));
+                }
             }
         } catch (Exception ignored) {
         }
